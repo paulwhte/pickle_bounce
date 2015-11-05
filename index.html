@@ -1,0 +1,182 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<title>pickle bounce</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+<script type="text/javascript"src = "simpleGame.js"></script>
+
+<script type="text/javascript"src = "pickle.js"></script>
+
+<script type="text/javascript"src = "scoreBox.js"></script>
+
+<script type="text/javascript"src = "resetButton.js"></script>
+
+<script type="text/javascript">
+    var game;
+    var scores = [];
+    var names = [];
+    var newString = "";
+    
+    /*$.get("scores.txt", function(data) {
+        //console.log(data);
+        var items = data.split(',');
+        //console.log(items);
+        
+
+        var count = 0;
+        for(var i = 0; i < 5; i++)
+        {
+            names[i] = items[i + count];
+            scores[i] = items[i + (count+1)];
+            count++;
+            //console.log(names[i] + ": " + scores[i]);
+        }
+    });*/
+    
+    function Game()
+    {
+        var checkLocalStorage = localStorage.getItem("highScore");
+        if (checkLocalStorage === "undefined") {
+            localStorage.setItem("highScore", 0);
+        }
+        
+        this.scene = new Scene();
+        
+        this.pickle = new Pickle(this, this.scene);
+        
+        this.scoreBox = new ScoreBox(this, this.scene);
+        
+        this.resetButton = new ResetButton(this, this.scene);
+        this.resetButton.visible = false;
+        
+        this.bounce = new Sound("boing.wav");
+        this.splat = new Sound("splat.wav");
+        
+        this.checkScore = function(clicks){
+            //console.log("checking up on the score");
+            
+            if(typeof(Storage) !== "undefined") {
+                //alert("Local Storage is supported");
+                var highScore = localStorage.getItem("highScore");
+                if (highScore !== "undefined") {
+                    if (clicks > highScore) {
+                        console.log("new high score");
+                        highScore = clicks;
+                        localStorage.setItem("highScore", highScore);
+                    }
+                } else {
+                    localStorage.setItem("highScore", clicks);
+                    console.log("score saved for first time");
+                }
+            } else {
+                console.log("Error, no local storage support");
+            }
+            
+        /*    
+            $.get("scores.txt", function(data) {
+                //console.log(data);
+                var items = data.split(',');
+                //console.log(items);
+                
+
+                var count = 0;
+                for(var i = 0; i < 5; i++)
+                {
+                    names[i] = items[i + count];
+                    scores[i] = items[i + (count+1)];
+                    count++;
+                    //console.log(names[i] + ": " + scores[i]);
+                }
+            });
+            
+            //get the amount of clicks from this round
+            console.log("This round's score: " + clicks);
+            var place = 6;
+            for(var i = 4; i >= 0; i--)
+            {
+                console.log("This round: " + clicks + " compared to " + scores[i]);
+                if (clicks >= scores[i]) {
+                    place = i;
+                }
+            }
+            
+            console.log("You placed: " + place);
+            
+            //get the users name if a high score
+            if (place != 6) {
+                var name = prompt("You got a high score! \n Number of clicks: " + clicks + "\n Place: " + (place+1) + "\n Enter your name to be shown on the leaderboard.");
+                
+                //users score must be put in at the place-th spot in scores and names array
+                newScores = [];
+                newNames = [];
+                
+                for (var i = 0; i < 5; i++) {
+                    newScores[i] = scores[i];
+                    newNames[i] = names[i];
+                }
+                
+                //put in new entry
+                newScores[place] = clicks;
+                newNames[place] = name;
+                console.log("Index: " + place + ", " + newNames[place] + ": " + newScores[place]);
+                
+                //move lower entries down by one
+                for(i = (place+1); i < 5; i++){
+                    newScores[i] = scores[i-1];
+                    newNames[i] = names[i-1];
+                }
+                
+                
+                for(var i = 0; i < 5; i++)
+                {
+                    console.log(newNames[i] + ": " + newScores[i]);
+                    if (i < 4) {
+                        newString += (newNames[i] + "," + newScores[i] + ",");
+                    } else {
+                        newString += (newNames[i] + "," + newScores[i]);
+                    }
+                    
+                }
+            }
+            
+            //newString is what needs to be put in the text file in place of the old scores
+            console.log(newString);
+            
+            window.location.href = "updateScores.php?scores=" + newString;
+            
+            /*var data = {scores:newString};
+            $.get('updateScores.php', function(data){
+                
+            });
+        */
+        }
+        
+        this.update = function(){
+            /*this.pickle.update();
+            this.resetButton.update();
+            this.scoreBox.update();*/
+            spriteList.update();
+        }
+    }
+    
+    function init(){
+        game = new Game();
+        game.scene.start();
+    } // end init
+    
+    function update(){
+        game.scene.clear();
+        
+        game.update();
+    } // end update
+    
+    </script>
+</head>
+
+<body onload = "init()">
+    
+</body>
+</html>
